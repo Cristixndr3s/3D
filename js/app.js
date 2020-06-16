@@ -64,23 +64,48 @@ function init() {
   // Agregaremos el elemento de lienzo como hijo del contenedor
   container.appendChild( renderer.domElement );
 
+  // iniciar loop animacion
+renderer.setAnimationLoop( () => {
+
+  update();
+  render();
+
+} );
+
 }
 
-function animate() {
-
-  // llamando la animacion
-  requestAnimationFrame( animate );
+function update() {
 
   // increase the mesh's rotation each frame
   mesh.rotation.z += 0.01;
   mesh.rotation.x += 0.01;
   mesh.rotation.y += 0.01;
 
+}
+
+function render() {
+
   // representar la escena
   renderer.render( scene, camera );
 
+}
+
+function onWindowResize() {
+
+  // set the aspect ratio to match the new browser window aspect ratio
+  camera.aspect = container.clientWidth / container.clientHeight;
+
+
+  // update the camera's frustum
+  camera.updateProjectionMatrix();
+
+  // update the size of the renderer AND the canvas
+  renderer.setSize( container.clientWidth, container.clientHeight );
 
 }
+
+window.addEventListener( 'resize', onWindowResize );
+
 
 init();
 animate();
