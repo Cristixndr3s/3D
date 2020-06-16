@@ -32,13 +32,25 @@ function init() {
   const geometry = new THREE.BoxBufferGeometry( 2, 2, 2 );
 
   // crear un material
-  const material = new THREE.MeshBasicMaterial();
+  const material = new THREE.MeshStandardMaterial( { color: 0x800080 } );
 
   // Crea una malla, pasando la geometría y el material como parámetros
   mesh = new THREE.Mesh( geometry, material );
 
   // Agregar la malla a la ecena
   scene.add( mesh );
+
+  // Create a directional light
+  const light = new THREE.DirectionalLight( 0xffffff, 5.0 );
+
+  // move the light back and up a bit
+  light.position.set( 10, 10, 10 );
+
+  // remember to add the light to the scene
+  scene.add( light );
+
+  // Agreguando suavizado al WebGLRenderer
+  renderer = new THREE.WebGLRenderer( { antialias: true } );
 
   // create el renderizador
   renderer = new THREE.WebGLRenderer();
@@ -58,8 +70,15 @@ function animate() {
 
   // llamando la animacion
   requestAnimationFrame( animate );
+
+  // increase the mesh's rotation each frame
+  mesh.rotation.z += 0.01;
+  mesh.rotation.x += 0.01;
+  mesh.rotation.y += 0.01;
+
   // representar la escena
   renderer.render( scene, camera );
+
 
 }
 
