@@ -7,95 +7,102 @@ let mesh;
 
 function init() {
 
-  // Obtenga una referencia al elemento contenedor que contendrá nuestra escena
   container = document.querySelector( '#scene-container' );
 
-  // crear une escena
   scene = new THREE.Scene();
+  scene.background = new THREE.Color( 0x8FBCD4 );
 
-  // Establecer el color de fondo de la escena
-  scene.background = new THREE.Color( 'skyblue' );
+  createCamera();
+  createControls();
+  createLights();
+  createMeshes();
+  createRenderer();
 
-  // Crear una camara
-  const fov = 35; // AKA campo de visión de 1 a 179 grados
-  const aspect = container.clientWidth / container.clientHeight; //relacion de aspecto
-  const near = 0.1; // plano de recorte cercano
-  const far = 100; // plano de recorte lejano
+  renderer.setAnimationLoop( () => {
 
-  camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
+    update();
+    render();
 
-  // cada objeto se crea inicialmente en (0, 0, 0)
-  // vamos a mover la cámara un poco hacia atrás para que podamos ver la escena
-  camera.position.set( 0, 0, 10 );
+  } );
 
-  // crear una geometria
+}
+
+function createCamera() {
+
+  camera = new THREE.PerspectiveCamera(
+    35, // FOV
+    container.clientWidth / container.clientHeight, // aspect
+
+    0.1, // near clipping plane
+    100, // far clipping plane
+  );
+
+  camera.position.set( -4, 4, 10 );
+
+}
+
+function createControls() {
+
+  controls = new THREE.OrbitControls( camera, container );
+
+}
+
+function createLights() {
+
+  const ambientLight = new THREE.HemisphereLight(
+     0xddeeff, // sky color
+     0x202020, // ground color
+     5, // intensity
+   );
+
+   const mainLight = new THREE.DirectionalLight( 0xffffff, 5 );
+   mainLight.position.set( 10, 10, 10 );
+
+   scene.add( ambientLight, mainLight );
+
+}
+
+function createMeshes() {
+
   const geometry = new THREE.BoxBufferGeometry( 2, 2, 2 );
 
-  // cargando una txtura
   const textureLoader = new THREE.TextureLoader();
 
   const texture = textureLoader.load( 'textures/uv_test_bw.png' );
 
-  //establecer el "espacio de color" de la textura
   texture.encoding = THREE.sRGBEncoding;
-
-  //reducir el desenfoque en ángulos de mirada
   texture.anisotropy = 16;
 
-  //crear un material estándar usando la textura que acabamos de cargar como un mapa de colores
   const material = new THREE.MeshStandardMaterial( {
-  map: texture,
-} );
+    map: texture,
+  } );
 
-  // crear un material
-  //const material = new THREE.MeshStandardMaterial( { color: 0x800080 } );
-
-  // Crea una malla, pasando la geometría y el material como parámetros
   mesh = new THREE.Mesh( geometry, material );
 
-  // Agregar la malla a la ecena
   scene.add( mesh );
 
-  // Create a directional light
-  const light = new THREE.DirectionalLight( 0xffffff, 5.0 );
+}
 
-  // move the light back and up a bit
-  light.position.set( 10, 10, 10 );
+function createRenderer() {
 
-  // remember to add the light to the scene
-  scene.add( light );
-
-  // Agreguando suavizado al WebGLRenderer
   renderer = new THREE.WebGLRenderer( { antialias: true } );
-
-  // create el renderizador
-  renderer = new THREE.WebGLRenderer();
-
-  //configurar el lienzo al mismo tamaño que el contenedor
   renderer.setSize( container.clientWidth, container.clientHeight );
 
-  //establecer la relacion de pixeles del renderizador
   renderer.setPixelRatio( window.devicePixelRatio );
 
-  // Agregaremos el elemento de lienzo como hijo del contenedor
+  renderer.gammaFactor = 2.2;
+  renderer.gammaOutput = true;
+
+  renderer.physicallyCorrectLights = true;
+
   container.appendChild( renderer.domElement );
-
-  // iniciar loop animacion
-renderer.setAnimationLoop( () => {
-
-  update();
-  render();
-
-} );
 
 }
 
 function update() {
 
   // increase the mesh's rotation each frame
-  mesh.rotation.z += 0.01;
-  mesh.rotation.x += 0.01;
-  mesh.rotation.y += 0.01;
+
 
 }
 
