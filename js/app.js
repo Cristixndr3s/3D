@@ -31,8 +31,24 @@ function init() {
   // crear una geometria
   const geometry = new THREE.BoxBufferGeometry( 2, 2, 2 );
 
+  // cargando una txtura
+  const textureLoader = new THREE.TextureLoader();
+
+  const texture = textureLoader.load( 'textures/uv_test_bw.png' );
+
+  //establecer el "espacio de color" de la textura
+  texture.encoding = THREE.sRGBEncoding;
+
+  //reducir el desenfoque en ángulos de mirada
+  texture.anisotropy = 16;
+
+  //crear un material estándar usando la textura que acabamos de cargar como un mapa de colores
+  const material = new THREE.MeshStandardMaterial( {
+  map: texture,
+} );
+
   // crear un material
-  const material = new THREE.MeshStandardMaterial( { color: 0x800080 } );
+  //const material = new THREE.MeshStandardMaterial( { color: 0x800080 } );
 
   // Crea una malla, pasando la geometría y el material como parámetros
   mesh = new THREE.Mesh( geometry, material );
